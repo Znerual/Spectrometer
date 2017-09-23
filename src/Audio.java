@@ -27,7 +27,7 @@ public class Audio {
             if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) {
                 bytesPerFrame = 1;
             }
-            int numBytes = 1024 * bytesPerFrame;
+            int numBytes = 4096 * bytesPerFrame;
             byte[] audioByte = new byte[numBytes];
 
             int numBytesRead = 0;
@@ -58,40 +58,44 @@ public class Audio {
                     }
                 }
                 //System.out.println(totalFramesRead);
+                int maxfre = 0;
+                float amountmaxfr = 0;
+                float arrayindexToFrequency = format.getSampleRate() / ( audioFloat.length);
                 /*
-                FourierTransformation ft = new FourierTransformation(audioFloat, 50, audioFloat.length / 2,1);
+               // FourierTransformation ft = new FourierTransformation(audioFloat, 0, 1024,arrayindexToFrequency, format.getSampleRate());
+                FourierTransformation ft = new FourierTransformation(audioFloat, 0,audioFloat.length / 2, 1 , format.getSampleRate() );
                 for(Map.Entry<Integer,Float> entry : ft.fourierKoeffizients.entrySet()) {
-                    //Integer key = entry.getKey();
+                    Integer key = entry.getKey();
                     Float value = entry.getValue();
-
-                    System.out.println(value);
+                    if (value > amountmaxfr) {
+                        maxfre = key;
+                        amountmaxfr = value;
+                    }
+                    //System.out.println(value);
                 }
-                */
-                FloatFFT_1D fftdo = new FloatFFT_1D(audioFloat.length);
-                float[] fft = new float[audioFloat.length * 2];
-                System.arraycopy(audioFloat, 0, fft, 0,audioFloat.length);
-                fftdo.realForwardFull(fft);
-                for (float v : fft) {
-                    System.out.println(v);
-                }
-
-
-               // System.out.println(ft.maxFreq);
-                /*
-                Chart.data = ft.fourierKoeffizients;
-                Chart.startFreq = 0;
-                Chart.endFreq =audioFloat.length;
-                Chart.step = 1;
-                Application.launch(Chart.class, new String[]{});
-*/
-
-            }
-           /* lChart.data = audioByte;
-            Application.launch(lChart.class, new String[]{});
+                System.out.println("Selbst: " + maxfre * arrayindexToFrequency);
             */
 
+                FloatFFT_1D fftdo = new FloatFFT_1D(audioFloat.length);
+                float[] fft = new float[audioFloat.length * 2];
+                //float arrayindexToFrequency = format.getSampleRate() / audioFloat.length;
+                System.arraycopy(audioFloat, 0, fft, 0,audioFloat.length);
+                fftdo.realForwardFull(fft);
 
-//            System.out.println("Tf: " + totalFramesRead + " TB: " + numBytesRead);
+
+                for (int i = 0; i < fft.length; i++) {
+                    if (fft[i] > amountmaxfr) {
+                        maxfre = i;
+                        amountmaxfr = fft[i];
+                    }
+                    System.out.println(i * arrayindexToFrequency + "    " + fft[i] );
+                }
+                // System.out.println("Lib: " + maxfre * arrayindexToFrequency);
+
+
+
+
+            }
         } catch (IOException | UnsupportedAudioFileException exc) {
 
         }
@@ -185,6 +189,6 @@ public class Audio {
     }
 
     public static void main(String[] args) {
-        processAudio(new File("Sound/sawtooth440.wav"));
+        processAudio(new File("Sound/sine220.wav"));
     }
 }
