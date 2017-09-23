@@ -83,12 +83,12 @@ public class Audio {
                 fftdo.realForwardFull(fft);
 
 
-                for (int i = 0; i < fft.length; i++) {
+                for (int i = audioFloat.length; i < fft.length; i++) {
                     if (fft[i] > amountmaxfr) {
-                        maxfre = i;
+                        maxfre = i - audioFloat.length;
                         amountmaxfr = fft[i];
                     }
-                    System.out.println(i * arrayindexToFrequency + "    " + fft[i] );
+                    System.out.println((i - audioFloat.length) * arrayindexToFrequency + "    " + fft[i] );
                 }
                 // System.out.println("Lib: " + maxfre * arrayindexToFrequency);
 
